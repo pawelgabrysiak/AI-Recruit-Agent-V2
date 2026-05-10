@@ -1,0 +1,20 @@
+## Uruchomienie projektu lokalnie
+
+### Wymagania
+- Python 3.10+
+- Ollama
+- Model: mistral
+
+### Kroki
+1. Pobierz model:
+   ```bash
+   ollama pull mistral
+Uruchom Ollama:
+
+ollama run mistral
+Zainstaluj zależności:
+
+pip install -r requirements.txt
+Uruchom aplikację:
+
+python -m streamlit run app.py

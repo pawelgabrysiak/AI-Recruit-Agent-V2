@@ -1,0 +1,11 @@
+Poszukujemy Data Scientist do zespołu w Warszawie.
+
+Wymagania:
+- Doświadczenie w pracy z danymi
+- Znajomość języka Python i bibliotek Pandas, NumPy
+- Doświadczenie z SQL
+- Umiejętność budowania modeli ML w Scikit-learn
+- Znajomość Git
+
+Mile widziane:
+- Znajomość Power BI

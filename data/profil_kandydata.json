@@ -1,0 +1,19 @@
+{
+    "imie": "Konrad",
+    "nazwisko": "Sadowski",
+    "lokalizacja": "Warszawa",
+    "umiejetnosci": ["Python", "SQL", "Pandas", "Scikit-learn", "Machine Learning", "Git"],
+    "projekty": ["Analiza danych sprzedażowych", "System rekomendacyjny"],
+    "doswiadczenie": [
+      {
+        "firma": "X Corp",
+        "stanowisko": "Junior Data Scientist",
+        "okres": "2023-2024",
+        "zadania": [
+          "Budowa modeli predykcyjnych",
+          "Analiza danych w Pythonie i SQL"
+        ]
+      }
+    ]
+  }
+  
