@@ -10,10 +10,8 @@ def test_analyze_match_regex():
     assert result["Java"] == "❌"
 
 def test_analyze_match_ai_success(mocker):
-    mock_chat = mocker.patch("utils.analyzer.ollama.chat")
-    mock_chat.return_value = {
-        "message": {
-            "content": """{
+    mock_call = mocker.patch("utils.analyzer.call_llm")
+    mock_call.return_value = """{
                 "dopasowanie": {"Python": {"status": "✅", "komentarz": "ok"}},
                 "ocena_ogolna": 90,
                 "mocne_strony": [],
@@ -21,8 +19,6 @@ def test_analyze_match_ai_success(mocker):
                 "rekomendacja": "test",
                 "brakujace_slowa_kluczowe": []
             }"""
-        }
-    }
     
     profile = {"imie": "Jan", "nazwisko": "Kowalski", "umiejetnosci": ["Python"], "doswiadczenie": [], "projekty": [], "lokalizacja": ""}
     result = analyze_match_ai(profile, "oferta z pythonem")

@@ -1,4 +1,4 @@
-import ollama
+from utils.llm_client import call_llm
 import json
 import re
 
@@ -31,7 +31,7 @@ def analyze_match(profile: dict, offer_text: str) -> dict:
     return results
 
 
-def analyze_match_ai(profile: dict, offer_text: str, model: str = "mistral") -> dict:
+def analyze_match_ai(profile: dict, offer_text: str, model: str = "mistral", api_keys: dict = None) -> dict:
     """
     Pełna analiza AI przez Ollama.
     Zwraca słownik z kluczami:
@@ -81,17 +81,14 @@ Odpowiedz TYLKO w JSON, bez markdown, bez komentarzy.
 """.strip()
 
     try:
-        response = ollama.chat(
-            model=model,
-            messages=[
-                {
-                    "role": "system",
-                    "content": "Jesteś ekspertem HR. Odpowiadasz WYŁĄCZNIE w formacie JSON, bez żadnego tekstu poza JSON-em. Używasz języka polskiego w wartościach."
-                },
-                {"role": "user", "content": prompt}
-            ]
-        )
-        raw = response["message"]["content"]
+        messages = [
+            {
+                "role": "system",
+                "content": "Jesteś ekspertem HR. Odpowiadasz WYŁĄCZNIE w formacie JSON, bez żadnego tekstu poza JSON-em. Używasz języka polskiego w wartościach."
+            },
+            {"role": "user", "content": prompt}
+        ]
+        raw = call_llm(model, messages, expected_format="json", api_keys=api_keys)
 
         # Wyczyść ewentualne backticki markdown
         raw = re.sub(r"```json|```", "", raw).strip()
@@ -117,4 +114,4 @@ Odpowiedz TYLKO w JSON, bez markdown, bez komentarzy.
             "brakujace_slowa_kluczowe": []
         }
     except Exception as e:
-        raise RuntimeError(f"Błąd połączenia z Ollama: {e}")
+        raise RuntimeError(f"Błąd analizy AI: {e}")

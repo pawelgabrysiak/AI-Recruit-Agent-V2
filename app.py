@@ -166,6 +166,9 @@ for key, default in {
     "analysis": None,
     "cover_letter": "",
     "model": config.get("models", {}).get("default", "mistral"),
+    "groq_api_key": "",
+    "gemini_api_key": "",
+    "deepseek_api_key": ""
 }.items():
     if key not in st.session_state:
         st.session_state[key] = default
@@ -187,12 +190,27 @@ with st.sidebar:
     st.markdown("---")
 
     # Ustawienia modelu
-    st.markdown("#### ⚙️ Ustawienia Ollama")
+    st.markdown("#### ⚙️ Ustawienia modelu")
     st.session_state.model = st.selectbox(
-        "Model",
+        "Wybierz dostawcę i model",
         config.get("models", {}).get("available", ["mistral", "llama3"]),
         index=0
     )
+    
+    if st.session_state.model.startswith("groq/"):
+        st.session_state.groq_api_key = st.text_input("Klucz API Groq", value=st.session_state.groq_api_key, type="password")
+        if not st.session_state.groq_api_key and not os.environ.get("GROQ_API_KEY"):
+            st.warning("Podaj klucz API Groq w polu powyżej lub w pliku .env")
+            
+    elif st.session_state.model.startswith("gemini/"):
+        st.session_state.gemini_api_key = st.text_input("Klucz API Gemini", value=st.session_state.gemini_api_key, type="password")
+        if not st.session_state.gemini_api_key and not os.environ.get("GEMINI_API_KEY"):
+            st.warning("Podaj klucz API Gemini w polu powyżej lub w pliku .env")
+            
+    elif st.session_state.model.startswith("deepseek/"):
+        st.session_state.deepseek_api_key = st.text_input("Klucz API DeepSeek", value=st.session_state.deepseek_api_key, type="password")
+        if not st.session_state.deepseek_api_key and not os.environ.get("DEEPSEEK_API_KEY"):
+            st.warning("Podaj klucz API DeepSeek w polu powyżej lub w pliku .env")
 
     if st.session_state.profile:
         st.markdown("---")
@@ -268,7 +286,8 @@ elif page == "👤  Profil kandydata":
                             f.write(profile_file.getbuffer())
                         
                         pdf_text = parse_pdf_resume("temp.pdf")
-                        st.session_state.profile = extract_profile_from_text(pdf_text, model=st.session_state.model)
+                        api_keys_dict = {"GROQ_API_KEY": st.session_state.groq_api_key, "GEMINI_API_KEY": st.session_state.gemini_api_key, "DEEPSEEK_API_KEY": st.session_state.deepseek_api_key}
+                        st.session_state.profile = extract_profile_from_text(pdf_text, model=st.session_state.model, api_keys=api_keys_dict)
                         
                         import os
                         if os.path.exists("temp.pdf"):
@@ -343,10 +362,12 @@ elif page == "🔍  Analiza AI":
             try:
                 logger.info(f"Starting AI analysis with model {st.session_state.model}")
                 from utils.analyzer import analyze_match_ai
+                api_keys_dict = {"GROQ_API_KEY": st.session_state.groq_api_key, "GEMINI_API_KEY": st.session_state.gemini_api_key, "DEEPSEEK_API_KEY": st.session_state.deepseek_api_key}
                 result = analyze_match_ai(
                     st.session_state.profile,
                     st.session_state.offer_text,
-                    model=st.session_state.model
+                    model=st.session_state.model,
+                    api_keys=api_keys_dict
                 )
                 st.session_state.analysis = result
             except Exception as e:
@@ -479,12 +500,14 @@ elif page == "📄  List motywacyjny":
         with st.spinner("✍️ Generuję list motywacyjny..."):
             try:
                 from utils.generator import generate_cover_letter_with_ollama
+                api_keys_dict = {"GROQ_API_KEY": st.session_state.groq_api_key, "GEMINI_API_KEY": st.session_state.gemini_api_key, "DEEPSEEK_API_KEY": st.session_state.deepseek_api_key}
                 letter = generate_cover_letter_with_ollama(
                     st.session_state.profile,
                     st.session_state.offer_text,
                     model=st.session_state.model,
                     style=style,
-                    extra_notes=extra
+                    extra_notes=extra,
+                    api_keys=api_keys_dict
                 )
                 st.session_state.cover_letter = letter
             except Exception as e:
@@ -497,11 +520,14 @@ elif page == "📄  List motywacyjny":
             with st.spinner("🔄 Ulepszam list..."):
                 try:
                     from utils.generator import improve_cover_letter
-                    st.session_state.cover_letter = improve_cover_letter(
+                    api_keys_dict = {"GROQ_API_KEY": st.session_state.groq_api_key, "GEMINI_API_KEY": st.session_state.gemini_api_key, "DEEPSEEK_API_KEY": st.session_state.deepseek_api_key}
+                    improved = improve_cover_letter(
                         st.session_state.cover_letter,
                         feedback,
-                        model=st.session_state.model
+                        model=st.session_state.model,
+                        api_keys=api_keys_dict
                     )
+                    st.session_state.cover_letter = improved
                     st.success("✅ List ulepszony!")
                 except Exception as e:
                     st.error(f"❌ Błąd: {e}")

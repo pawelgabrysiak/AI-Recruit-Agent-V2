@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 import pdfplumber
-import ollama
+from utils.llm_client import call_llm
 import re
 
 
@@ -86,7 +86,7 @@ def parse_pdf_resume(filepath: str) -> str:
         
     return text.strip()
 
-def extract_profile_from_text(text: str, model: str = "mistral") -> dict:
+def extract_profile_from_text(text: str, model: str = "mistral", api_keys: dict = None) -> dict:
     """
     Uses Ollama to extract structured JSON profile from raw resume text.
     """
@@ -114,14 +114,11 @@ Treść CV:
 {text}
 """
     try:
-        response = ollama.chat(
-            model=model,
-            messages=[
-                {"role": "system", "content": "Odpowiadasz WYŁĄCZNIE w formacie JSON."},
-                {"role": "user", "content": prompt}
-            ]
-        )
-        raw = response["message"]["content"]
+        messages = [
+            {"role": "system", "content": "Odpowiadasz WYŁĄCZNIE w formacie JSON."},
+            {"role": "user", "content": prompt}
+        ]
+        raw = call_llm(model, messages, expected_format="json", api_keys=api_keys)
         raw = re.sub(r"```json|```", "", raw).strip()
         start = raw.find("{")
         end = raw.rfind("}") + 1

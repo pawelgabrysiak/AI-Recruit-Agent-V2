@@ -5,3 +5,6 @@ pytest
 pytest-cov
 pytest-mock
 pdfplumber
+python-dotenv
+google-generativeai
+openai

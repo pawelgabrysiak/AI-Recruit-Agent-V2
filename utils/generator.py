@@ -1,4 +1,4 @@
-import ollama
+from utils.llm_client import call_llm
 
 
 STYLE_PROMPTS = {
@@ -13,7 +13,8 @@ def generate_cover_letter_with_ollama(
     offer_text: str,
     model: str = "mistral",
     style: str = "profesjonalny",
-    extra_notes: str = ""
+    extra_notes: str = "",
+    api_keys: dict = None
 ) -> str:
     """
     Generuje list motywacyjny przy pomocy lokalnego modelu Ollama.
@@ -65,30 +66,28 @@ Wygeneruj TYLKO treść listu motywacyjnego – bez tytułu, bez nagłówka "Lis
 """.strip()
 
     try:
-        response = ollama.chat(
-            model=model,
-            messages=[
-                {
-                    "role": "system",
-                    "content": (
-                        "Jesteś doświadczonym doradcą kariery w Polsce. "
-                        "Piszesz listy motywacyjne wyłącznie w języku polskim. "
-                        "Twoje listy są naturalne, konkretne i skuteczne."
-                    )
-                },
-                {"role": "user", "content": prompt}
-            ]
-        )
-        return response["message"]["content"].strip()
+        messages = [
+            {
+                "role": "system",
+                "content": (
+                    "Jesteś doświadczonym doradcą kariery w Polsce. "
+                    "Piszesz listy motywacyjne wyłącznie w języku polskim. "
+                    "Twoje listy są naturalne, konkretne i skuteczne."
+                )
+            },
+            {"role": "user", "content": prompt}
+        ]
+        return call_llm(model, messages, expected_format="text", api_keys=api_keys)
 
     except Exception as e:
-        raise RuntimeError(f"Błąd generowania listu przez Ollama: {e}")
+        raise RuntimeError(f"Błąd generowania listu przez AI: {e}")
 
 
 def improve_cover_letter(
     original_letter: str,
     feedback: str,
-    model: str = "mistral"
+    model: str = "mistral",
+    api_keys: dict = None
 ) -> str:
     """
     Ulepsza istniejący list motywacyjny na podstawie uwag użytkownika.
@@ -106,16 +105,13 @@ Zwróć TYLKO poprawiony list, bez komentarzy ani wyjaśnień.
 """.strip()
 
     try:
-        response = ollama.chat(
-            model=model,
-            messages=[
-                {
-                    "role": "system",
-                    "content": "Jesteś ekspertem od pisania listów motywacyjnych po polsku."
-                },
-                {"role": "user", "content": prompt}
-            ]
-        )
-        return response["message"]["content"].strip()
+        messages = [
+            {
+                "role": "system",
+                "content": "Jesteś ekspertem od pisania listów motywacyjnych po polsku."
+            },
+            {"role": "user", "content": prompt}
+        ]
+        return call_llm(model, messages, expected_format="text", api_keys=api_keys)
     except Exception as e:
         raise RuntimeError(f"Błąd ulepszania listu: {e}")
