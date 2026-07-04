@@ -1,6 +1,10 @@
 import streamlit as st
 import json
 import os
+from utils.logger import setup_logger
+from utils.config import config
+
+logger = setup_logger("streamlit_app")
 
 # ──────────────────────────────────────────
 # Konfiguracja strony
@@ -161,7 +165,7 @@ for key, default in {
     "offer_text": "",
     "analysis": None,
     "cover_letter": "",
-    "model": "mistral",
+    "model": config.get("models", {}).get("default", "mistral"),
 }.items():
     if key not in st.session_state:
         st.session_state[key] = default
@@ -186,7 +190,7 @@ with st.sidebar:
     st.markdown("#### ⚙️ Ustawienia Ollama")
     st.session_state.model = st.selectbox(
         "Model",
-        ["mistral", "llama3", "llama3.2", "llama3.2:3b", "gemma2", "phi3", "neural-chat"],
+        config.get("models", {}).get("available", ["mistral", "llama3"]),
         index=0
     )
 
@@ -322,6 +326,7 @@ elif page == "🔍  Analiza AI":
     if run:
         with st.spinner(f"🧠 Analizuję z modelem {st.session_state.model}..."):
             try:
+                logger.info(f"Starting AI analysis with model {st.session_state.model}")
                 from utils.analyzer import analyze_match_ai
                 result = analyze_match_ai(
                     st.session_state.profile,

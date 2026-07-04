@@ -1,0 +1,19 @@
+app:
+  name: "AI RekrutAgent"
+  version: "2.0.0"
+
+paths:
+  data_dir: "data"
+  output_dir: "output"
+  log_file: "output/app.log"
+
+models:
+  default: "mistral"
+  available:
+    - "mistral"
+    - "llama3"
+    - "llama3.2"
+    - "llama3.2:3b"
+    - "gemma2"
+    - "phi3"
+    - "neural-chat"
