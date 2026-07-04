@@ -1,2 +1,7 @@
 ollama
 streamlit
+pyyaml
+pytest
+pytest-cov
+pytest-mock
+pdfplumber
