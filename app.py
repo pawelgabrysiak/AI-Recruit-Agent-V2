@@ -253,13 +253,28 @@ elif page == "👤  Profil kandydata":
     tab1, tab2 = st.tabs(["📂 Wczytaj plik JSON", "✏️ Uzupełnij ręcznie"])
 
     with tab1:
-        profile_file = st.file_uploader("Wybierz plik JSON z profilem kandydata", type="json")
+        profile_file = st.file_uploader("Wybierz plik z profilem kandydata (JSON lub PDF)", type=["json", "pdf"])
         if profile_file:
             try:
-                from utils.parser import profile_from_dict
-                raw = json.load(profile_file)
-                st.session_state.profile = profile_from_dict(raw)
-                st.success("✅ Profil wczytany pomyślnie!")
+                from utils.parser import profile_from_dict, parse_pdf_resume, extract_profile_from_text
+                
+                if profile_file.name.lower().endswith(".json"):
+                    raw = json.load(profile_file)
+                    st.session_state.profile = profile_from_dict(raw)
+                    st.success("✅ Profil wczytany pomyślnie!")
+                elif profile_file.name.lower().endswith(".pdf"):
+                    with st.spinner("📄 Przetwarzanie PDF przez AI (może to zająć chwilę)..."):
+                        with open("temp.pdf", "wb") as f:
+                            f.write(profile_file.getbuffer())
+                        
+                        pdf_text = parse_pdf_resume("temp.pdf")
+                        st.session_state.profile = extract_profile_from_text(pdf_text, model=st.session_state.model)
+                        
+                        import os
+                        if os.path.exists("temp.pdf"):
+                            os.remove("temp.pdf")
+                            
+                    st.success("✅ Profil wyekstrahowany z pliku PDF!")
             except Exception as e:
                 st.error(f"❌ Błąd: {e}")
 
