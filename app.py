@@ -234,31 +234,28 @@ if page == "🏠  Strona główna":
     </div>
     """, unsafe_allow_html=True)
 
+    def go_to_page(page_name):
+        st.session_state.nav_radio = page_name
+
     col1, col2, col3 = st.columns(3)
     with col1:
         st.markdown("""<div class="card" style="height: 140px;">
             <h3>👤 Profil</h3>
             <p style="color:#64748b">Wczytaj PDF, JSON lub uzupełnij ręcznie.</p>
         </div>""", unsafe_allow_html=True)
-        if st.button("Przejdź ➔", key="btn_prof", use_container_width=True):
-            st.session_state.nav_radio = "👤  Profil kandydata"
-            st.rerun()
+        st.button("Przejdź ➔", key="btn_prof", on_click=go_to_page, args=("👤  Profil kandydata",), use_container_width=True)
     with col2:
         st.markdown("""<div class="card" style="height: 140px;">
             <h3>🔍 Analiza AI</h3>
             <p style="color:#64748b">Oceń dopasowanie swoich umiejętności.</p>
         </div>""", unsafe_allow_html=True)
-        if st.button("Przejdź ➔", key="btn_anal", use_container_width=True):
-            st.session_state.nav_radio = "🔍  Analiza AI"
-            st.rerun()
+        st.button("Przejdź ➔", key="btn_anal", on_click=go_to_page, args=("🔍  Analiza AI",), use_container_width=True)
     with col3:
         st.markdown("""<div class="card" style="height: 140px;">
             <h3>📄 List</h3>
             <p style="color:#64748b">Wygeneruj list motywacyjny.</p>
         </div>""", unsafe_allow_html=True)
-        if st.button("Przejdź ➔", key="btn_list", use_container_width=True):
-            st.session_state.nav_radio = "📄  List motywacyjny"
-            st.rerun()
+        st.button("Przejdź ➔", key="btn_list", on_click=go_to_page, args=("📄  List motywacyjny",), use_container_width=True)
 
     st.markdown("### 🚀 Jak zacząć?")
     st.markdown("""
