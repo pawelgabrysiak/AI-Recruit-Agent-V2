@@ -1,103 +1,72 @@
-# 🤖 AI RekrutAgent
+# 🤖 AI-Recruit-Agent V2
 
-Inteligentny asystent do szukania pracy. Analizuje Twój profil kandydata, ocenia dopasowanie do oferty pracy i generuje spersonalizowany list motywacyjny — wszystko lokalnie, bez chmury, przy użyciu Ollama.
+[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://ai-recruit-agent.streamlit.app/)
 
-## ✨ Funkcje
+Inteligentny asystent rekrutacyjny wspomagający szukanie pracy. Analizuje Twoje CV (w formacie PDF lub wgramy ręcznie), ocenia dopasowanie do wybranej oferty pracy i generuje spersonalizowany, świetnie dopasowany list motywacyjny. 
+Narzędzie obsługuje zarówno potężne, darmowe modele chmurowe (Groq, Google Gemini, DeepSeek), jak i w pełni prywatne, lokalne modele sztucznej inteligencji (Ollama).
 
-- **Analiza AI** — model językowy analizuje całą ofertę i ocenia każdą umiejętność z komentarzem
-- **Ocena procentowa** dopasowania kandydata do stanowiska
-- **Mocne strony i braki** — AI wskazuje co wzmocnić w CV
-- **Słowa kluczowe** — lista terminów do dodania do CV
-- **List motywacyjny** w 3 stylach: profesjonalny, entuzjastyczny, zwięzły
-- **Ulepszanie listu** — AI poprawia list na podstawie Twoich uwag
-- **Dwa tryby** — aplikacja webowa (Streamlit) i CLI
+🌐 **Przetestuj na żywo:** [https://ai-recruit-agent.streamlit.app/](https://ai-recruit-agent.streamlit.app/)
 
-## 🚀 Instalacja
+## ✨ Co nowego w V2?
 
-### 1. Zainstaluj Ollama
-Pobierz z [ollama.com](https://ollama.com) i zainstaluj.
+- **Wgrywanie PDF:** Koniec z ręcznym wpisywaniem danych! Wgraj swoje CV w formacie `.pdf`, a Agent AI sam wyciągnie z niego odpowiednie informacje i ułoży je w ustrukturyzowany profil dla analizatora.
+- **Wsparcie dla darmowych API w Chmurze:** Aplikacja obsługuje teraz błyskawiczne API chmurowe. Nie musisz posiadać mocnej karty graficznej! Dostępne integracje (do których możesz wpisać darmowy klucz):
+  - **Groq** (ultraszybkie modele np. Llama 3.1 i 3.3)
+  - **Google Gemini** (Gemini 2.5 Flash / Pro)
+  - **DeepSeek** (DeepSeek-Chat, DeepSeek-Coder)
+- **Zaawansowana konfiguracja (`config.yaml`) & Logowanie:** Ustrukturyzowana konfiguracja modeli, profesjonalny system zapisywania zdarzeń (logi w pliku `output/app.log`) oraz centralne zarządzanie kluczami API przez plik `.env`.
+- **Wsparcie dla Dockera:** Gotowy plik `Dockerfile` umożliwia uruchomienie aplikacji i wdrożenie jej na własny serwer (VPS) zaledwie jedną komendą.
+- **Architektura Testowa:** Dodano kompleksowe testy jednostkowe oparte na `pytest` (>70% pokrycia logiki biznesowej), zapewniając stabilność działania.
 
-### 2. Pobierz model
+## 🚀 Jak zacząć? (Lokalnie)
+
+### Opcja 1: Klasyczne środowisko Python
+
+1. **Sklonuj projekt i zainstaluj zależności:**
 ```bash
-ollama pull mistral
-# lub lepszy do języka polskiego:
-ollama pull llama3
-```
-
-### 3. Sklonuj projekt i zainstaluj zależności
-```bash
+git clone https://github.com/pawelgabrysiak/AI-Recruit-Agent-V2.git
+cd AI-Recruit-Agent-V2
 pip install -r requirements.txt
 ```
 
-## ▶️ Uruchomienie
+2. **Skonfiguruj klucze API (Opcjonalnie):**
+Skopiuj plik `.env.example` i zmień jego nazwę na `.env`. Wklej tam swoje darmowe klucze API od [Groq](https://console.groq.com/keys), [Gemini](https://aistudio.google.com/app/apikey) lub [DeepSeek](https://platform.deepseek.com/). *(Uwaga: Możesz też podać je po prostu z poziomu interfejsu aplikacji webowej w przeglądarce).*
 
-### Aplikacja webowa (Streamlit)
+3. **Uruchom aplikację webową (Streamlit):**
 ```bash
-# Upewnij się, że Ollama działa:
-ollama serve
-
-# W osobnym terminalu:
 streamlit run app.py
 ```
 
-### Wersja CLI
+### Opcja 2: Konteneryzacja (Docker)
+Jeśli preferujesz Dockera, wdrożenie jest niesamowicie szybkie:
 ```bash
-python main.py
-# lub z innym modelem:
-python main.py llama3
+docker build -t ai-recruit-agent .
+docker run -d -p 8501:8501 ai-recruit-agent
 ```
+Z aplikacją połączysz się w przeglądarce pod adresem: `http://localhost:8501`.
+
+## ⚙️ Tryb offline i prywatność (Ollama)
+Jeśli aplikujesz do organizacji rządowych lub preferujesz zachowanie 100% prywatności swoich danych, aplikacja może działać całkowicie lokalnie (offline).
+1. Zainstaluj system [Ollama](https://ollama.com).
+2. Pobierz odpowiedni model: `ollama pull mistral` lub `ollama pull llama3.2`.
+3. Odpal w tle serwer: `ollama serve`.
+4. Wybierz odpowiedni model Ollama z rozwijanej listy w interfejsie aplikacji.
 
 ## 📁 Struktura projektu
-
 ```
-AI-RekrutAgent/
-├── app.py                  ← Aplikacja Streamlit (wielostronicowa)
-├── main.py                 ← Wersja CLI
-├── requirements.txt
-├── README.md
-├── data/
-│   ├── profil_kandydata.json   ← Przykładowy profil
-│   └── oferta1.txt             ← Przykładowa oferta
+AI-Recruit-Agent V2/
+├── app.py                  ← Aplikacja Streamlit (Interfejs graficzny)
+├── main.py                 ← Wersja terminalowa (CLI)
+├── config.yaml             ← Konfiguracja dostępnych modeli i dostawców
+├── Dockerfile              ← Instrukcja budowania kontenera Docker
+├── requirements.txt        ← Lista bibliotek (pdfplumber, streamlit, openai, google-generativeai, itp.)
+├── .env.example            ← Szablon pliku na klucze API
 ├── utils/
-│   ├── analyzer.py         ← Analiza AI + fallback regex
-│   ├── generator.py        ← Generowanie i ulepszanie listu
-│   └── parser.py           ← Wczytywanie i walidacja danych
-└── output/                 ← Wyniki CLI (tworzone automatycznie)
-```
-
-## 👤 Format profilu JSON
-
-```json
-{
-  "imie": "Jan",
-  "nazwisko": "Kowalski",
-  "lokalizacja": "Warszawa",
-  "umiejetnosci": ["Python", "SQL", "Machine Learning", "Git"],
-  "projekty": ["System rekomendacyjny", "Analiza danych sprzedażowych"],
-  "doswiadczenie": [
-    {
-      "firma": "Acme Corp",
-      "stanowisko": "Junior Data Scientist",
-      "okres": "2023-2024",
-      "zadania": ["Budowa modeli predykcyjnych", "Analiza danych w Python"]
-    }
-  ]
-}
-```
-
-## 🧠 Obsługiwane modele Ollama
-
-| Model | Polecenie | Jakość PL |
-|---|---|---|
-| mistral | `ollama pull mistral` | ★★★★☆ |
-| llama3 | `ollama pull llama3` | ★★★★★ |
-| llama3.2 | `ollama pull llama3.2` | ★★★★★ |
-| gemma2 | `ollama pull gemma2` | ★★★★☆ |
-| phi3 | `ollama pull phi3` | ★★★☆☆ |
-
-## 📦 Wymagania
-
-```
-ollama
-streamlit
+│   ├── analyzer.py         ← Analizator oceniający dopasowanie (AI + RegEx)
+│   ├── generator.py        ← Generowanie i ulepszanie listów motywacyjnych
+│   ├── parser.py           ← Czytanie PDF i strukturyzowanie profilu kandydata
+│   ├── llm_client.py       ← Zunifikowany mostek AI (Ollama, Groq, Gemini, DeepSeek)
+│   └── logger.py           ← System logowania zdarzeń
+├── tests/                  ← Testy jednostkowe z mockowaniem (pytest)
+└── data/                   ← Folder z przykładowymi danymi i ofertami
 ```
