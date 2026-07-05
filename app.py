@@ -183,7 +183,7 @@ with st.sidebar:
 
     page = st.radio(
         "Nawigacja",
-        ["🏠  Strona główna", "👤  Profil kandydata", "🔍  Analiza AI", "📄  List motywacyjny", "ℹ️  Jak to działa"],
+        ["🏠  Strona główna", "👤  Profil kandydata", "💼  Oferta pracy", "🔍  Analiza AI", "📄  List motywacyjny", "ℹ️  Jak to działa"],
         label_visibility="collapsed",
         key="nav_radio"
     )
@@ -237,20 +237,26 @@ if page == "🏠  Strona główna":
     def go_to_page(page_name):
         st.session_state.nav_radio = page_name
 
-    col1, col2, col3 = st.columns(3)
+    col1, col2, col3, col4 = st.columns(4)
     with col1:
         st.markdown("""<div class="card" style="height: 140px;">
             <h3>👤 Profil</h3>
-            <p style="color:#64748b">Wczytaj PDF, JSON lub uzupełnij ręcznie.</p>
+            <p style="color:#64748b">Wczytaj CV jako PDF lub JSON.</p>
         </div>""", unsafe_allow_html=True)
         st.button("Przejdź ➔", key="btn_prof", on_click=go_to_page, args=("👤  Profil kandydata",), use_container_width=True)
     with col2:
         st.markdown("""<div class="card" style="height: 140px;">
-            <h3>🔍 Analiza AI</h3>
-            <p style="color:#64748b">Oceń dopasowanie swoich umiejętności.</p>
+            <h3>💼 Oferta</h3>
+            <p style="color:#64748b">Pobierz z linku lub wklej treść.</p>
+        </div>""", unsafe_allow_html=True)
+        st.button("Przejdź ➔", key="btn_offer", on_click=go_to_page, args=("💼  Oferta pracy",), use_container_width=True)
+    with col3:
+        st.markdown("""<div class="card" style="height: 140px;">
+            <h3>🔍 Analiza</h3>
+            <p style="color:#64748b">Oceń dopasowanie do oferty.</p>
         </div>""", unsafe_allow_html=True)
         st.button("Przejdź ➔", key="btn_anal", on_click=go_to_page, args=("🔍  Analiza AI",), use_container_width=True)
-    with col3:
+    with col4:
         st.markdown("""<div class="card" style="height: 140px;">
             <h3>📄 List</h3>
             <p style="color:#64748b">Wygeneruj list motywacyjny.</p>
@@ -259,10 +265,10 @@ if page == "🏠  Strona główna":
 
     st.markdown("### 🚀 Jak zacząć?")
     st.markdown("""
-    1. Przejdź do **Profil kandydata** i wczytaj swój plik JSON (lub uzupełnij ręcznie)
-    2. Wklej treść ogłoszenia o pracę
-    3. Przejdź do **Analiza AI** i kliknij „Analizuj"
-    4. Przejdź do **List motywacyjny** i wygeneruj list
+    1. Przejdź do **Profil kandydata** i wczytaj swoje CV (np. PDF)
+    2. Przejdź do **Oferta pracy** i podaj link do ogłoszenia (lub wklej tekst)
+    3. Przejdź do **Analiza AI** i przeanalizuj swoje szanse
+    4. Przejdź do **List motywacyjny** i wygeneruj profesjonalny dokument
     """)
 
     if not st.session_state.profile:
@@ -335,8 +341,9 @@ elif page == "👤  Profil kandydata":
                 }
                 st.success("✅ Profil zapisany!")
 
-    st.markdown("---")
-    st.markdown("## 📄 Ogłoszenie o pracę")
+# ── 3. OFERTA PRACY ──
+elif page == "💼  Oferta pracy":
+    st.markdown("## 💼 Ogłoszenie o pracę")
     
     tab_text, tab_url = st.tabs(["📝 Wklej tekst", "🔗 Podaj link"])
     
@@ -370,7 +377,7 @@ elif page == "👤  Profil kandydata":
                 st.write(st.session_state.offer_text)
 
 
-# ── 3. ANALIZA AI ──
+# ── 4. ANALIZA AI ──
 elif page == "🔍  Analiza AI":
     st.markdown("## 🔍 Analiza dopasowania AI")
 
@@ -378,7 +385,7 @@ elif page == "🔍  Analiza AI":
         st.warning("⚠️ Najpierw uzupełnij profil w zakładce **Profil kandydata**.")
         st.stop()
     if not st.session_state.offer_text.strip():
-        st.warning("⚠️ Najpierw wklej ogłoszenie o pracę w zakładce **Profil kandydata**.")
+        st.warning("⚠️ Najpierw wklej ogłoszenie o pracę w zakładce **Oferta pracy**.")
         st.stop()
 
     col_btn, col_info = st.columns([1, 3])
@@ -488,7 +495,7 @@ elif page == "🔍  Analiza AI":
         st.success("✅ Analiza gotowa! Przejdź do zakładki **List motywacyjny** aby wygenerować list.")
 
 
-# ── 4. LIST MOTYWACYJNY ──
+# ── 5. LIST MOTYWACYJNY ──
 elif page == "📄  List motywacyjny":
     st.markdown("## 📄 List motywacyjny")
 
@@ -496,7 +503,7 @@ elif page == "📄  List motywacyjny":
         st.warning("⚠️ Najpierw uzupełnij profil w zakładce **Profil kandydata**.")
         st.stop()
     if not st.session_state.offer_text.strip():
-        st.warning("⚠️ Najpierw wklej ogłoszenie w zakładce **Profil kandydata**.")
+        st.warning("⚠️ Najpierw wklej ogłoszenie w zakładce **Oferta pracy**.")
         st.stop()
 
     col1, col2 = st.columns([2, 1])
@@ -597,7 +604,7 @@ elif page == "📄  List motywacyjny":
         st.caption(f"📊 Długość: {chars} znaków · {words} słów")
 
 
-# ── 5. JAK TO DZIAŁA ──
+# ── 6. JAK TO DZIAŁA ──
 elif page == "ℹ️  Jak to działa":
     st.markdown("## ℹ️ Jak to działa")
 
