@@ -337,14 +337,37 @@ elif page == "👤  Profil kandydata":
 
     st.markdown("---")
     st.markdown("## 📄 Ogłoszenie o pracę")
-    st.session_state.offer_text = st.text_area(
-        "Wklej treść ogłoszenia o pracę",
-        value=st.session_state.offer_text,
-        height=250,
-        placeholder="Wklej tutaj pełną treść ogłoszenia..."
-    )
-    if st.session_state.offer_text:
-        st.success(f"✅ Ogłoszenie wczytane ({len(st.session_state.offer_text)} znaków)")
+    
+    tab_text, tab_url = st.tabs(["📝 Wklej tekst", "🔗 Podaj link"])
+    
+    with tab_text:
+        st.session_state.offer_text = st.text_area(
+            "Wklej treść ogłoszenia o pracę",
+            value=st.session_state.offer_text,
+            height=250,
+            placeholder="Wklej tutaj pełną treść ogłoszenia..."
+        )
+        if st.session_state.offer_text:
+            st.success(f"✅ Ogłoszenie wczytane ({len(st.session_state.offer_text)} znaków)")
+            
+    with tab_url:
+        url_input = st.text_input("Link do oferty pracy", placeholder="https://nofluffjobs.com/pl/job/...")
+        if st.button("🌐 Pobierz z linku"):
+            if not url_input:
+                st.warning("Podaj najpierw link do oferty.")
+            else:
+                with st.spinner("Pobieranie i czyszczenie tekstu..."):
+                    try:
+                        from utils.scraper import fetch_job_offer
+                        extracted_text = fetch_job_offer(url_input)
+                        st.session_state.offer_text = extracted_text
+                        st.success(f"✅ Pomyślnie pobrano tekst z oferty ({len(extracted_text)} znaków)!")
+                    except Exception as e:
+                        st.error(f"❌ {e}")
+                        
+        if st.session_state.offer_text and url_input:
+            with st.expander("Podgląd aktualnie wgranego ogłoszenia"):
+                st.write(st.session_state.offer_text)
 
 
 # ── 3. ANALIZA AI ──

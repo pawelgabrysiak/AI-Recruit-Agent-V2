@@ -8,3 +8,5 @@ pdfplumber
 python-dotenv
 google-generativeai
 openai
+requests
+beautifulsoup4
