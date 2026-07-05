@@ -10,7 +10,7 @@ logger = setup_logger("streamlit_app")
 # Konfiguracja strony
 # ──────────────────────────────────────────
 st.set_page_config(
-    page_title="AI RekrutAgent",
+    page_title="AI-Recruit-Agent V2",
     page_icon="🤖",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -178,7 +178,7 @@ for key, default in {
 # SIDEBAR – NAWIGACJA
 # ──────────────────────────────────────────
 with st.sidebar:
-    st.markdown("### 🤖 AI RekrutAgent")
+    st.markdown("### 🤖 AI-Recruit-Agent V2")
     st.markdown("---")
 
     page = st.radio(
@@ -228,8 +228,8 @@ with st.sidebar:
 if page == "🏠  Strona główna":
     st.markdown("""
     <div class="hero">
-        <h1>🤖 AI RekrutAgent</h1>
-        <p>Twój inteligentny asystent do szukania pracy. Analizuje Twój profil, ocenia dopasowanie do oferty i generuje spersonalizowany list motywacyjny — wszystko lokalnie, bez chmury.</p>
+        <h1>🤖 AI-Recruit-Agent V2</h1>
+        <p>Twój inteligentny asystent do szukania pracy. Wgraj CV jako PDF, a my ocenimy Twoje dopasowanie do oferty i wygenerujemy spersonalizowany list motywacyjny. Obsługuje potężne chmury (Groq, Gemini, DeepSeek) oraz w pełni prywatną, lokalną Ollamę.</p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -371,8 +371,8 @@ elif page == "🔍  Analiza AI":
                 )
                 st.session_state.analysis = result
             except Exception as e:
-                st.error(f"❌ Błąd połączenia z Ollama: {e}")
-                st.info("Upewnij się, że Ollama jest uruchomiona (`ollama serve`) i model jest pobrany.")
+                st.error(f"❌ Błąd API: {e}")
+                st.info("Sprawdź poprawność klucza API, lub upewnij się, że Ollama jest uruchomiona (`ollama serve`) jeśli używasz modelu lokalnego.")
                 st.stop()
 
     if st.session_state.analysis:
@@ -511,8 +511,8 @@ elif page == "📄  List motywacyjny":
                 )
                 st.session_state.cover_letter = letter
             except Exception as e:
-                st.error(f"❌ Błąd: {e}")
-                st.info("Upewnij się, że Ollama jest uruchomiona i model jest pobrany.")
+                st.error(f"❌ Błąd API: {e}")
+                st.info("Sprawdź poprawność klucza API, lub upewnij się, że Ollama jest uruchomiona i model jest pobrany.")
 
     if improve_btn and st.session_state.cover_letter:
         feedback = st.text_area("Co poprawić?", placeholder="np. Zrób go krótszym, dodaj więcej o projektach...")
@@ -609,20 +609,22 @@ AI-RekrutAgent/
 
     st.markdown("### ⚙️ Wymagania")
     st.markdown("""
-    1. **Ollama** zainstalowana lokalnie: [ollama.com](https://ollama.com)
-    2. Model pobrany: `ollama pull mistral`
-    3. Ollama uruchomiona: `ollama serve`
-    4. Zależności Python: `pip install -r requirements.txt`
-    5. Uruchomienie: `streamlit run app.py`
+    Wersja V2 wspiera potężne i **darmowe API Chmurowe** (Groq, Gemini, DeepSeek). Wystarczy podać klucz API w bocznym panelu aplikacji!
+    
+    Jeśli wolisz działać w 100% lokalnie i prywatnie (offline):
+    1. Zainstaluj **Ollama**: [ollama.com](https://ollama.com)
+    2. Pobierz wybrany model: `ollama pull llama3.2`
+    3. Uruchom serwer Ollama w tle: `ollama serve`
     """)
 
-    st.markdown("### 🧠 Dostępne modele Ollama")
+    st.markdown("### 🧠 Dostępne modele (Chmura + Ollama)")
     st.markdown("""
-    | Model | Polecenie pobierania | Jakość PL |
+    Aplikacja centralnie zarządza listą modeli przez plik `config.yaml`.
+    
+    | Dostawca | Przykładowe Modele | Wymagania |
     |---|---|---|
-    | mistral | `ollama pull mistral` | ★★★★☆ |
-    | llama3 | `ollama pull llama3` | ★★★★★ |
-    | llama3.2 | `ollama pull llama3.2` | ★★★★★ |
-    | gemma2 | `ollama pull gemma2` | ★★★★☆ |
-    | phi3 | `ollama pull phi3` | ★★★☆☆ |
+    | **Groq** | `llama-3.3-70b-versatile`, `llama-3.1-8b-instant` | Darmowy klucz API |
+    | **Google Gemini** | `gemini-2.5-flash`, `gemini-2.5-pro` | Darmowy klucz API |
+    | **DeepSeek** | `deepseek-chat`, `deepseek-coder` | Klucz API |
+    | **Ollama** (Lokalnie)| `llama3.2`, `mistral`, `gemma2` | Pobrany model na dysku |
     """)
