@@ -184,7 +184,8 @@ with st.sidebar:
     page = st.radio(
         "Nawigacja",
         ["🏠  Strona główna", "👤  Profil kandydata", "🔍  Analiza AI", "📄  List motywacyjny", "ℹ️  Jak to działa"],
-        label_visibility="collapsed"
+        label_visibility="collapsed",
+        key="nav_radio"
     )
 
     st.markdown("---")
@@ -229,26 +230,35 @@ if page == "🏠  Strona główna":
     st.markdown("""
     <div class="hero">
         <h1>🤖 AI-Recruit-Agent V2</h1>
-        <p>Twój inteligentny asystent do szukania pracy. Wgraj CV jako PDF, a my ocenimy Twoje dopasowanie do oferty i wygenerujemy spersonalizowany list motywacyjny. Obsługuje potężne chmury (Groq, Gemini, DeepSeek) oraz w pełni prywatną, lokalną Ollamę.</p>
+        <p>Twój inteligentny asystent do szukania pracy. Wgraj CV (jako PDF lub stary ustrukturyzowany JSON), a my ocenimy Twoje dopasowanie do oferty i wygenerujemy spersonalizowany list motywacyjny. Obsługuje potężne chmury (Groq, Gemini, DeepSeek) oraz w pełni prywatną, lokalną Ollamę.</p>
     </div>
     """, unsafe_allow_html=True)
 
     col1, col2, col3 = st.columns(3)
     with col1:
-        st.markdown("""<div class="card">
-            <h3>👤 Profil kandydata</h3>
-            <p style="color:#64748b">Wczytaj swój profil JSON lub uzupełnij dane ręcznie.</p>
+        st.markdown("""<div class="card" style="height: 140px;">
+            <h3>👤 Profil</h3>
+            <p style="color:#64748b">Wczytaj PDF, JSON lub uzupełnij ręcznie.</p>
         </div>""", unsafe_allow_html=True)
+        if st.button("Przejdź ➔", key="btn_prof", use_container_width=True):
+            st.session_state.nav_radio = "👤  Profil kandydata"
+            st.rerun()
     with col2:
-        st.markdown("""<div class="card">
+        st.markdown("""<div class="card" style="height: 140px;">
             <h3>🔍 Analiza AI</h3>
-            <p style="color:#64748b">AI ocenia dopasowanie Twoich umiejętności do wymagań oferty.</p>
+            <p style="color:#64748b">Oceń dopasowanie swoich umiejętności.</p>
         </div>""", unsafe_allow_html=True)
+        if st.button("Przejdź ➔", key="btn_anal", use_container_width=True):
+            st.session_state.nav_radio = "🔍  Analiza AI"
+            st.rerun()
     with col3:
-        st.markdown("""<div class="card">
-            <h3>📄 List motywacyjny</h3>
-            <p style="color:#64748b">Wygeneruj spersonalizowany list gotowy do wysyłki.</p>
+        st.markdown("""<div class="card" style="height: 140px;">
+            <h3>📄 List</h3>
+            <p style="color:#64748b">Wygeneruj list motywacyjny.</p>
         </div>""", unsafe_allow_html=True)
+        if st.button("Przejdź ➔", key="btn_list", use_container_width=True):
+            st.session_state.nav_radio = "📄  List motywacyjny"
+            st.rerun()
 
     st.markdown("### 🚀 Jak zacząć?")
     st.markdown("""
