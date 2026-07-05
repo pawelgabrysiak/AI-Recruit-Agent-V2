@@ -1,6 +1,7 @@
 import streamlit as st
 import json
 import os
+import streamlit.components.v1 as components
 from utils.logger import setup_logger
 from utils.config import config
 
@@ -281,10 +282,10 @@ if page == "🏠  Strona główna":
 elif page == "👤  Profil kandydata":
     st.markdown("## 👤 Profil kandydata")
 
-    tab1, tab2 = st.tabs(["📂 Wczytaj plik JSON", "✏️ Uzupełnij ręcznie"])
+    tab1, tab2 = st.tabs(["📂 Wczytaj plik PDF lub JSON", "✏️ Uzupełnij ręcznie"])
 
     with tab1:
-        profile_file = st.file_uploader("Wybierz plik z profilem kandydata (JSON lub PDF)", type=["json", "pdf"])
+        profile_file = st.file_uploader("Wybierz plik z profilem kandydata (PDF lub JSON)", type=["json", "pdf"])
         if profile_file:
             try:
                 from utils.parser import profile_from_dict, parse_pdf_resume, extract_profile_from_text
@@ -608,25 +609,36 @@ elif page == "📄  List motywacyjny":
 elif page == "ℹ️  Jak to działa":
     st.markdown("## ℹ️ Jak to działa")
 
-    st.markdown("""
-    <div class="card">
-        <h3>🏗️ Architektura projektu</h3>
-        <pre style="color:#94a3b8; font-size:0.85rem">
-AI-RekrutAgent/
-├── app.py                  ← Streamlit UI (ta aplikacja)
-├── main.py                 ← Wersja CLI
-├── requirements.txt
-├── data/
-│   ├── profil_kandydata.json
-│   └── oferta1.txt
-├── utils/
-│   ├── analyzer.py         ← Analiza AI + fallback regex
-│   ├── generator.py        ← Generowanie listu
-│   └── parser.py           ← Wczytywanie plików
-└── output/                 ← Wyniki CLI
-        </pre>
+    st.markdown("### 🏗️ Architektura projektu")
+    mermaid_html = """
+    <div class="mermaid" style="display: flex; justify-content: center; align-items: center; background-color: #161923; padding: 20px; border-radius: 16px; border: 1px solid rgba(108,138,255,0.15);">
+    graph TD
+        User((Użytkownik)) -->|Wgrywa CV| P[utils/parser.py]
+        User -->|Link do Oferty| S[utils/scraper.py]
+        
+        P --> AI((Model AI<br/>Groq / Gemini / Ollama))
+        S --> AI
+        
+        AI --> A[utils/analyzer.py<br/>Ocena Dopasowania]
+        AI --> G[utils/generator.py<br/>Pisanie Listu]
+        
+        A --> UI[app.py<br/>Interfejs]
+        G --> UI
+        
+        style User fill:#6c8aff,stroke:#333,stroke-width:2px,color:#fff
+        style AI fill:#a78bfa,stroke:#333,stroke-width:2px,color:#fff
+        style P fill:#1e2330,stroke:#6c8aff,color:#fff
+        style S fill:#1e2330,stroke:#6c8aff,color:#fff
+        style A fill:#1e2330,stroke:#34d399,color:#fff
+        style G fill:#1e2330,stroke:#fbbf24,color:#fff
+        style UI fill:#161923,stroke:#6c8aff,color:#fff
     </div>
-    """, unsafe_allow_html=True)
+    <script type="module">
+      import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+      mermaid.initialize({ startOnLoad: true, theme: 'dark', backgroundColor: 'transparent' });
+    </script>
+    """
+    components.html(mermaid_html, height=480, scrolling=False)
 
     col1, col2 = st.columns(2)
     with col1:
